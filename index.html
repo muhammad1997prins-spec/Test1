@@ -1,456 +1,391 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعبئة الاستمارات التلقائية (PDF & Excel)</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts for Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Required Libraries -->
+    <!-- SheetJS for Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- pdf-lib for PDF Manipulation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <!-- JSZip for zipping files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- FileSaver for downloading the zip -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font-sans); direction: rtl; }
-  .app { padding: 1.5rem 1rem; max-width: 700px; margin: 0 auto; }
-  .header { margin-bottom: 2rem; }
-  .header h1 { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
-  .header p { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; }
-  .steps { display: flex; gap: 8px; margin-bottom: 2rem; align-items: center; }
-  .step { display: flex; align-items: center; gap: 6px; font-size: 13px; }
-  .step-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
-  .step.active .step-num { background: #378ADD; color: white; }
-  .step.done .step-num { background: #639922; color: white; }
-  .step.inactive .step-num { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); }
-  .step-label { color: var(--color-text-secondary); }
-  .step.active .step-label { color: var(--color-text-primary); font-weight: 500; }
-  .step-divider { flex: 1; height: 1px; background: var(--color-border-tertiary); }
-  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
-  .card-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
-  .upload-zone { border: 1.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 2rem 1rem; text-align: center; cursor: pointer; transition: background 0.15s; }
-  .upload-zone:hover { background: var(--color-background-secondary); }
-  .upload-zone.has-file { border-color: #639922; background: #EAF3DE; }
-  .upload-zone.has-file .upload-icon { color: #3B6D11; }
-  .upload-zone.has-file .upload-text { color: #3B6D11; }
-  .upload-icon { font-size: 28px; color: var(--color-text-secondary); margin-bottom: 8px; }
-  .upload-text { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 4px; }
-  .upload-hint { font-size: 12px; color: var(--color-text-tertiary); }
-  .upload-filename { font-size: 13px; font-weight: 500; color: #3B6D11; margin-top: 6px; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--border-radius-md); font-size: 14px; cursor: pointer; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-primary); transition: background 0.15s; }
-  .btn:hover { background: var(--color-background-secondary); }
-  .btn-primary { background: #378ADD; color: white; border-color: #378ADD; }
-  .btn-primary:hover { background: #185FA5; border-color: #185FA5; }
-  .btn-success { background: #639922; color: white; border-color: #639922; }
-  .btn-success:hover { background: #3B6D11; border-color: #3B6D11; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .action-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.5rem; }
-  .mapping-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .mapping-table th { text-align: right; padding: 8px 10px; background: var(--color-background-secondary); color: var(--color-text-secondary); font-weight: 500; border-bottom: 0.5px solid var(--color-border-tertiary); }
-  .mapping-table td { padding: 8px 10px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); }
-  .mapping-table select { font-size: 13px; padding: 4px 8px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); width: 100%; }
-  .tag { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 500; }
-  .tag-text { background: #E6F1FB; color: #0C447C; }
-  .tag-cb { background: #EAF3DE; color: #27500A; }
-  .tag-radio { background: #FAEEDA; color: #633806; }
-  .results-list { list-style: none; }
-  .results-list li { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 14px; }
-  .results-list li:last-child { border-bottom: none; }
-  .status-ok { color: #639922; display: flex; align-items: center; gap: 4px; }
-  .status-err { color: #E24B4A; display: flex; align-items: center; gap: 4px; }
-  .progress-bar { background: var(--color-background-secondary); border-radius: 99px; height: 8px; overflow: hidden; margin: 8px 0; }
-  .progress-fill { background: #378ADD; height: 100%; border-radius: 99px; transition: width 0.3s; }
-  .info-box { background: #E6F1FB; border: 0.5px solid #B5D4F4; border-radius: var(--border-radius-md); padding: 12px 14px; font-size: 13px; color: #0C447C; display: flex; gap: 8px; align-items: flex-start; margin-bottom: 1rem; }
-  .warn-box { background: #FAEEDA; border: 0.5px solid #FAC775; border-radius: var(--border-radius-md); padding: 12px 14px; font-size: 13px; color: #633806; display: flex; gap: 8px; align-items: flex-start; margin-bottom: 1rem; }
-  .hidden { display: none !important; }
-  .section { margin-bottom: 1.5rem; }
-  .section-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
-  .name-col-select { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
-  .name-col-select label { font-size: 14px; color: var(--color-text-secondary); white-space: nowrap; }
-  .name-col-select select { font-size: 13px; padding: 6px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); flex: 1; }
-  #step2, #step3, #step4 { display: none; }
-</style>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .file-upload-wrapper:hover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col items-center py-10 px-4">
 
-<div class="app">
-  <h2 class="sr-only">أداة ملء استمارات PDF من Excel</h2>
-
-  <div class="header">
-    <h1><i class="ti ti-file-description" aria-hidden="true"></i> مُعبّئ استمارات مع محمد PDF</h1>
-    <p>ارفع استمارة PDF وملف Excel يحتوي بيانات الأشخاص، وسيتم إنشاء استمارة مملوءة لكل شخص تلقائياً.</p>
-  </div>
-
-  <div class="steps" id="steps-bar">
-    <div class="step active" id="s1-ind">
-      <div class="step-num">1</div>
-      <span class="step-label">رفع الملفات</span>
-    </div>
-    <div class="step-divider"></div>
-    <div class="step inactive" id="s2-ind">
-      <div class="step-num">2</div>
-      <span class="step-label">ربط الحقول</span>
-    </div>
-    <div class="step-divider"></div>
-    <div class="step inactive" id="s3-ind">
-      <div class="step-num">3</div>
-      <span class="step-label">مراجعة</span>
-    </div>
-    <div class="step-divider"></div>
-    <div class="step inactive" id="s4-ind">
-      <div class="step-num">4</div>
-      <span class="step-label">تحميل</span>
-    </div>
-  </div>
-
-  <!-- Step 1 -->
-  <div id="step1">
-    <div class="warn-box">
-      <i class="ti ti-info-circle" style="font-size:18px; flex-shrink:0; margin-top:1px" aria-hidden="true"></i>
-      <span>هذه الأداة تعمل مع استمارات PDF التي تحتوي على <strong>حقول قابلة للتعبئة</strong> (fillable fields). إذا كانت الاستمارة مصوّرة أو غير تفاعلية، فالنتائج قد تختلف.</span>
-    </div>
-
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title"><i class="ti ti-file-type-pdf" aria-hidden="true" style="color:#E24B4A"></i> استمارة PDF</div>
-        <div class="upload-zone" id="pdf-zone" onclick="document.getElementById('pdf-input').click()">
-          <div class="upload-icon"><i class="ti ti-upload" aria-hidden="true"></i></div>
-          <div class="upload-text">انقر أو اسحب ملف PDF</div>
-          <div class="upload-hint">استمارة واحدة بحقول قابلة للتعبئة</div>
-          <div class="upload-filename hidden" id="pdf-name"></div>
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden">
+        
+        <!-- Header -->
+        <div class="bg-blue-600 p-6 text-white text-center">
+            <h1 class="text-3xl font-bold mb-2">أداة التعبئة التلقائية للاستمارات</h1>
+            <p class="text-blue-100 opacity-90 mb-4">قم برفع استمارة PDF وملف Excel لتوليد الاستمارات المعبأة فوراً</p>
+            <div class="inline-block bg-blue-800 bg-opacity-40 border border-blue-400 px-6 py-2 rounded-full text-md font-bold shadow-sm">
+                إعداد: الأستاذ محمد عبدالرحمن
+            </div>
         </div>
-        <input type="file" id="pdf-input" accept=".pdf" style="display:none">
-      </div>
 
-      <div class="card">
-        <div class="card-title"><i class="ti ti-table" aria-hidden="true" style="color:#639922"></i> بيانات Excel</div>
-        <div class="upload-zone" id="excel-zone" onclick="document.getElementById('excel-input').click()">
-          <div class="upload-icon"><i class="ti ti-upload" aria-hidden="true"></i></div>
-          <div class="upload-text">انقر أو اسحب ملف Excel</div>
-          <div class="upload-hint">.xlsx أو .xls — صف لكل شخص</div>
-          <div class="upload-filename hidden" id="excel-name"></div>
+        <div class="p-8 space-y-8">
+            
+            <!-- Step 1 & 2: File Uploads -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- PDF Upload -->
+                <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer transition-colors file-upload-wrapper relative" onclick="document.getElementById('pdf-file').click()">
+                    <input type="file" id="pdf-file" accept="application/pdf" class="hidden">
+                    <div class="text-blue-500 mb-3">
+                        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-bold mb-1">1. اختر استمارة PDF</h3>
+                    <p class="text-sm text-gray-500" id="pdf-status">يجب أن يحتوي الملف على حقول قابلة للتعبئة (Fillable PDF)</p>
+                </div>
+
+                <!-- Excel Upload -->
+                <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer transition-colors file-upload-wrapper relative" onclick="document.getElementById('excel-file').click()">
+                    <input type="file" id="excel-file" accept=".xlsx, .xls, .csv" class="hidden">
+                    <div class="text-green-500 mb-3">
+                        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-bold mb-1">2. اختر ملف Excel</h3>
+                    <p class="text-sm text-gray-500" id="excel-status">يحتوي على البيانات المطلوب إدخالها</p>
+                </div>
+
+            </div>
+
+            <!-- Step 3: Mapping Section (Hidden initially) -->
+            <div id="mapping-section" class="hidden border rounded-xl overflow-hidden shadow-sm border-blue-200">
+                <div class="bg-blue-50 border-b border-blue-100 p-4">
+                    <h3 class="text-xl font-bold text-blue-900">3. الربط اليدوي للحقول</h3>
+                    <p class="text-sm text-blue-700 mt-1">من خلال الجدول أدناه، قم باختيار العمود المناسب من ملف الإكسل لربطه يدوياً بكل حقل في استمارة الـ PDF.</p>
+                </div>
+                
+                <div class="p-6 space-y-6">
+                    <!-- File Naming Configuration -->
+                    <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-center justify-between">
+                        <div>
+                            <h4 class="font-bold text-blue-800">تسمية الملفات الناتجة</h4>
+                            <p class="text-sm text-blue-600">اختر العمود الذي سيتم استخدامه لتسمية كل ملف PDF (مثل: اسم الشخص)</p>
+                        </div>
+                        <div class="w-1/3">
+                            <select id="filename-column" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                                <!-- Options will be populated here -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Mapping Table -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-right">
+                            <thead class="bg-gray-100 text-gray-700">
+                                <tr>
+                                    <th class="px-4 py-3 rounded-tr-lg w-1/2">حقل الـ PDF (الاستمارة)</th>
+                                    <th class="px-4 py-3 rounded-tl-lg w-1/2">عمود الـ Excel (البيانات)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mapping-table-body" class="divide-y divide-gray-200">
+                                <!-- Mapping rows will be dynamically generated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Action & Status -->
+                <div class="bg-gray-50 border-t p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <button id="generate-btn" class="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg transition-colors flex items-center justify-center gap-2">
+                        <span>توليد وتحميل الاستمارات (ZIP)</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    </button>
+                    
+                    <div id="progress-container" class="hidden flex-1 w-full flex items-center gap-3">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div id="progress-bar" class="bg-green-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        <span id="progress-text" class="text-sm font-bold text-gray-700 whitespace-nowrap">0%</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <input type="file" id="excel-input" accept=".xlsx,.xls" style="display:none">
-      </div>
     </div>
 
-    <div class="action-row">
-      <button class="btn btn-primary" id="btn-analyze" disabled onclick="analyzeFiles()">
-        <i class="ti ti-arrow-left" aria-hidden="true"></i> تحليل الملفات
-      </button>
-    </div>
-  </div>
+    <script>
+        // State variables
+        let pdfBytes = null;
+        let pdfFields = [];
+        let excelData = [];
+        let excelHeaders = [];
 
-  <!-- Step 2 -->
-  <div id="step2">
-    <div class="card">
-      <div class="card-title"><i class="ti ti-adjustments" aria-hidden="true"></i> ربط أعمدة Excel بحقول الاستمارة</div>
+        // DOM Elements
+        const pdfInput = document.getElementById('pdf-file');
+        const excelInput = document.getElementById('excel-file');
+        const pdfStatus = document.getElementById('pdf-status');
+        const excelStatus = document.getElementById('excel-status');
+        const mappingSection = document.getElementById('mapping-section');
+        const mappingTableBody = document.getElementById('mapping-table-body');
+        const filenameSelect = document.getElementById('filename-column');
+        const generateBtn = document.getElementById('generate-btn');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
 
-      <div class="info-box">
-        <i class="ti ti-bulb" style="font-size:18px; flex-shrink:0" aria-hidden="true"></i>
-        <span>تم اكتشاف الحقول تلقائياً. راجع الربط وعدّله إذا لزم. الحقول المتروكة فارغة لن تُملأ.</span>
-      </div>
+        // Handle PDF Upload
+        pdfInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
 
-      <div class="name-col-select">
-        <label><i class="ti ti-user" aria-hidden="true"></i> عمود اسم الشخص (لتسمية الملف):</label>
-        <select id="name-col-select"></select>
-      </div>
+            pdfStatus.innerHTML = `<span class="text-blue-600 font-bold">جاري القراءة...</span>`;
+            
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                pdfBytes = arrayBuffer;
+                
+                // Load PDF and extract fields
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                const form = pdfDoc.getForm();
+                const fields = form.getFields();
+                
+                pdfFields = fields.map(f => ({
+                    name: f.getName(),
+                    type: f.constructor.name
+                }));
 
-      <div id="mapping-container"></div>
+                if(pdfFields.length === 0) {
+                    pdfStatus.innerHTML = `<span class="text-red-500 font-bold">لم يتم العثور على حقول قابلة للتعبئة في هذا الملف!</span>`;
+                    pdfBytes = null;
+                } else {
+                    pdfStatus.innerHTML = `<span class="text-green-600 font-bold">تم التعرف على ${pdfFields.length} حقل. (ملف: ${file.name})</span>`;
+                    checkReadyStatus();
+                }
+            } catch (error) {
+                console.error("PDF Error:", error);
+                pdfStatus.innerHTML = `<span class="text-red-500 font-bold">خطأ في قراءة ملف الـ PDF.</span>`;
+            }
+        });
 
-      <div class="action-row">
-        <button class="btn" onclick="goStep(1)"><i class="ti ti-arrow-right" aria-hidden="true"></i> رجوع</button>
-        <button class="btn btn-primary" onclick="goStep(3)"><i class="ti ti-arrow-left" aria-hidden="true"></i> مراجعة</button>
-      </div>
-    </div>
-  </div>
+        // Handle Excel Upload
+        excelInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
 
-  <!-- Step 3 -->
-  <div id="step3">
-    <div class="card">
-      <div class="card-title"><i class="ti ti-eye" aria-hidden="true"></i> مراجعة قبل الإنشاء</div>
-      <div id="preview-content"></div>
-      <div class="action-row">
-        <button class="btn" onclick="goStep(2)"><i class="ti ti-arrow-right" aria-hidden="true"></i> رجوع</button>
-        <button class="btn btn-success" onclick="generateAll()"><i class="ti ti-file-zip" aria-hidden="true"></i> إنشاء كل الاستمارات</button>
-      </div>
-    </div>
-  </div>
+            excelStatus.innerHTML = `<span class="text-blue-600 font-bold">جاري القراءة...</span>`;
 
-  <!-- Step 4 -->
-  <div id="step4">
-    <div class="card">
-      <div class="card-title"><i class="ti ti-circle-check" style="color:#639922" aria-hidden="true"></i> الاستمارات جاهزة للتحميل</div>
-      <div id="results-content"></div>
-      <div class="action-row">
-        <button class="btn" onclick="resetAll()"><i class="ti ti-refresh" aria-hidden="true"></i> بدء من جديد</button>
-        <button class="btn btn-success" id="btn-download-all" onclick="downloadAll()">
-          <i class="ti ti-download" aria-hidden="true"></i> تحميل الكل (ZIP)
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const data = new Uint8Array(event.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    
+                    // Assume data is in the first sheet
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // Convert to JSON
+                    const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+                    
+                    if(json.length === 0) {
+                        excelStatus.innerHTML = `<span class="text-red-500 font-bold">الملف فارغ أو لا يحتوي على بيانات صحيحة.</span>`;
+                        return;
+                    }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script>
-let pdfFile = null, excelFile = null;
-let pdfBytes = null, excelRows = [], excelCols = [], pdfFields = [];
-let generatedFiles = [];
+                    excelData = json;
+                    // Get headers from the first object
+                    excelHeaders = Object.keys(json[0]);
 
-function setupDrop(zoneId, inputId, type) {
-  const zone = document.getElementById(zoneId);
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.background = 'var(--color-background-secondary)'; });
-  zone.addEventListener('dragleave', () => { zone.style.background = ''; });
-  zone.addEventListener('drop', e => {
-    e.preventDefault(); zone.style.background = '';
-    const f = e.dataTransfer.files[0];
-    if (f) handleFile(f, type);
-  });
-  document.getElementById(inputId).addEventListener('change', e => {
-    if (e.target.files[0]) handleFile(e.target.files[0], type);
-  });
-}
-setupDrop('pdf-zone', 'pdf-input', 'pdf');
-setupDrop('excel-zone', 'excel-input', 'excel');
+                    excelStatus.innerHTML = `<span class="text-green-600 font-bold">تم تحميل ${excelData.length} صف بيانات. (ملف: ${file.name})</span>`;
+                    checkReadyStatus();
 
-function handleFile(file, type) {
-  if (type === 'pdf') {
-    pdfFile = file;
-    document.getElementById('pdf-name').textContent = file.name;
-    document.getElementById('pdf-name').classList.remove('hidden');
-    document.getElementById('pdf-zone').classList.add('has-file');
-    document.getElementById('pdf-zone').querySelector('.upload-icon').innerHTML = '<i class="ti ti-check" aria-hidden="true"></i>';
-    document.getElementById('pdf-zone').querySelector('.upload-text').textContent = 'تم رفع الملف';
-  } else {
-    excelFile = file;
-    document.getElementById('excel-name').textContent = file.name;
-    document.getElementById('excel-name').classList.remove('hidden');
-    document.getElementById('excel-zone').classList.add('has-file');
-    document.getElementById('excel-zone').querySelector('.upload-icon').innerHTML = '<i class="ti ti-check" aria-hidden="true"></i>';
-    document.getElementById('excel-zone').querySelector('.upload-text').textContent = 'تم رفع الملف';
-  }
-  if (pdfFile && excelFile) document.getElementById('btn-analyze').disabled = false;
-}
+                } catch (error) {
+                    console.error("Excel Error:", error);
+                    excelStatus.innerHTML = `<span class="text-red-500 font-bold">خطأ في قراءة ملف الإكسل.</span>`;
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
 
-async function analyzeFiles() {
-  const btn = document.getElementById('btn-analyze');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> جاري التحليل...';
+        // Check if both files are loaded to show mapping
+        function checkReadyStatus() {
+            if (pdfBytes && excelData.length > 0) {
+                buildMappingUI();
+                mappingSection.classList.remove('hidden');
+            }
+        }
 
-  try {
-    pdfBytes = await pdfFile.arrayBuffer();
-    const PDFLib = window.PDFLib;
-    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
-    const form = pdfDoc.getForm();
-    const fields = form.getFields();
+        // Build the dynamic mapping UI
+        function buildMappingUI() {
+            // 1. Populate Filename Select
+            filenameSelect.innerHTML = '';
+            excelHeaders.forEach((header, index) => {
+                const option = document.createElement('option');
+                option.value = header;
+                option.textContent = header;
+                // Auto select column that might contain 'اسم' or 'name'
+                if(header.includes('اسم') || header.toLowerCase().includes('name')) {
+                    option.selected = true;
+                }
+                filenameSelect.appendChild(option);
+            });
 
-    pdfFields = fields.map(f => {
-      let type = 'text';
-      if (f.constructor.name.includes('Check')) type = 'checkbox';
-      else if (f.constructor.name.includes('Radio')) type = 'radio';
-      else if (f.constructor.name.includes('Dropdown') || f.constructor.name.includes('Select')) type = 'choice';
-      return { name: f.getName(), type };
-    });
+            // 2. Populate Mapping Table
+            mappingTableBody.innerHTML = '';
+            pdfFields.forEach(field => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50";
 
-    const arrBuf = await excelFile.arrayBuffer();
-    const wb = XLSX.read(arrBuf, { type: 'array' });
-    const ws = wb.Sheets[wb.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-    excelCols = data[0] ? data[0].map(String) : [];
-    excelRows = data.slice(1).filter(r => r.some(c => c !== undefined && c !== ''));
+                // PDF Field Name Cell
+                const tdPdf = document.createElement('td');
+                tdPdf.className = "px-4 py-3 border-b font-medium text-blue-800";
+                tdPdf.textContent = field.name;
 
-    buildMapping();
-    goStep(2);
-  } catch(e) {
-    btn.disabled = false;
-    btn.innerHTML = '<i class="ti ti-arrow-left"></i> تحليل الملفات';
-    alert('حدث خطأ أثناء قراءة الملفات: ' + e.message);
-  }
-}
+                // Excel Header Select Cell
+                const tdExcel = document.createElement('td');
+                tdExcel.className = "px-4 py-3 border-b";
+                
+                const select = document.createElement('select');
+                select.className = "w-full border-gray-300 rounded-md shadow-sm p-2 border focus:border-blue-500 focus:ring-blue-500 map-select";
+                select.dataset.pdfField = field.name;
+                select.dataset.fieldType = field.type;
 
-function buildMapping() {
-  const nc = document.getElementById('name-col-select');
-  nc.innerHTML = excelCols.map((c,i) => `<option value="${i}">${c}</option>`).join('');
+                // Add empty option
+                select.appendChild(new Option('-- تجاهل هذا الحقل --', ''));
 
-  if (!pdfFields.length) {
-    document.getElementById('mapping-container').innerHTML = `
-      <div class="warn-box"><i class="ti ti-alert-triangle" style="font-size:18px; flex-shrink:0" aria-hidden="true"></i>
-      <span>لم يتم اكتشاف حقول قابلة للتعبئة في الـ PDF. تأكد أن الاستمارة تحتوي على حقول تفاعلية وليست مجرد صورة.</span></div>`;
-    return;
-  }
+                // Add excel headers as options
+                excelHeaders.forEach(header => {
+                    const option = new Option(header, header);
+                    // Smart auto-mapping: If pdf field name roughly matches excel header
+                    if (header.trim().toLowerCase() === field.name.trim().toLowerCase()) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
 
-  const optionsHtml = `<option value="">— لا تملأ —</option>` + excelCols.map((c,i) => `<option value="${i}">${c}</option>`).join('');
+                tdExcel.appendChild(select);
+                tr.appendChild(tdPdf);
+                tr.appendChild(tdExcel);
+                mappingTableBody.appendChild(tr);
+            });
+        }
 
-  const rows = pdfFields.map((f, i) => {
-    const autoIdx = excelCols.findIndex(c => c.toLowerCase().replace(/\s/g,'') === f.name.toLowerCase().replace(/\s/g,''));
-    const sel = autoIdx >= 0 ? autoIdx : '';
-    const tag = f.type === 'text' ? `<span class="tag tag-text">نص</span>` :
-                f.type === 'checkbox' ? `<span class="tag tag-cb">خانة</span>` :
-                `<span class="tag tag-radio">خيار</span>`;
-    return `<tr>
-      <td>${f.name}</td>
-      <td>${tag}</td>
-      <td><select id="map-${i}" data-field="${i}">${optionsHtml.replace(`value="${sel}"`, `value="${sel}" selected`)}</select></td>
-    </tr>`;
-  }).join('');
+        // Generate process
+        generateBtn.addEventListener('click', async () => {
+            if (!pdfBytes || excelData.length === 0) return;
 
-  document.getElementById('mapping-container').innerHTML = `
-    <table class="mapping-table">
-      <thead><tr><th>حقل الاستمارة</th><th>النوع</th><th>عمود Excel</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-}
+            // Prepare UI for processing
+            generateBtn.classList.add('hidden');
+            progressContainer.classList.remove('hidden');
+            
+            try {
+                // Initialize JSZip
+                const zip = new JSZip();
+                
+                // Get Mapping Configuration
+                const selects = document.querySelectorAll('.map-select');
+                const mapping = [];
+                selects.forEach(select => {
+                    if (select.value) { // If not ignored
+                        mapping.push({
+                            pdfField: select.dataset.pdfField,
+                            fieldType: select.dataset.fieldType,
+                            excelColumn: select.value
+                        });
+                    }
+                });
 
-function getMapping() {
-  return pdfFields.map((f, i) => {
-    const sel = document.getElementById('map-' + i);
-    return { field: f, colIdx: sel && sel.value !== '' ? parseInt(sel.value) : null };
-  });
-}
+                const filenameCol = filenameSelect.value;
+                const total = excelData.length;
 
-function goStep(n) {
-  [1,2,3,4].forEach(i => {
-    document.getElementById('step' + i).style.display = i === n ? 'block' : 'none';
-    const ind = document.getElementById('s' + i + '-ind');
-    ind.className = 'step ' + (i < n ? 'done' : i === n ? 'active' : 'inactive');
-  });
-  if (n === 3) buildPreview();
-}
+                // Process each row in Excel
+                for (let i = 0; i < total; i++) {
+                    const rowData = excelData[i];
+                    
+                    // Update progress bar
+                    const percent = Math.round(((i + 1) / total) * 100);
+                    progressBar.style.width = percent + '%';
+                    progressText.textContent = `جاري معالجة ${i + 1} من ${total} (${percent}%)`;
 
-function buildPreview() {
-  const mapping = getMapping();
-  const mapped = mapping.filter(m => m.colIdx !== null);
-  const nameColIdx = parseInt(document.getElementById('name-col-select').value);
-  const pc = document.getElementById('preview-content');
+                    // Load fresh PDF for this row
+                    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+                    const form = pdfDoc.getForm();
 
-  const sampleRows = excelRows.slice(0, 3);
-  const sampleHtml = sampleRows.map(row => {
-    const name = row[nameColIdx] || 'بدون اسم';
-    return `<li><span>${name}</span><span class="status-ok"><i class="ti ti-check" aria-hidden="true"></i> سيتم الإنشاء</span></li>`;
-  }).join('');
+                    // Fill fields
+                    for (const map of mapping) {
+                        try {
+                            const field = form.getField(map.pdfField);
+                            const val = rowData[map.excelColumn];
+                            
+                            if (val !== undefined && val !== null) {
+                                if (map.fieldType === 'PDFTextField') {
+                                    field.setText(String(val));
+                                } else if (map.fieldType === 'PDFCheckBox') {
+                                    if (val === true || val === 'نعم' || val === 'Yes' || val === '1' || val === 1) {
+                                        field.check();
+                                    } else {
+                                        field.uncheck();
+                                    }
+                                }
+                                // You can add PDFDropdown or PDFRadioGroup support here if needed
+                            }
+                        } catch (err) {
+                            console.warn(`Could not set field ${map.pdfField}`, err);
+                            // Continue processing other fields
+                        }
+                    }
 
-  pc.innerHTML = `
-    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:1rem;">
-      <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:12px; text-align:center;">
-        <div style="font-size:24px; font-weight:500; color:var(--color-text-primary)">${excelRows.length}</div>
-        <div style="font-size:12px; color:var(--color-text-secondary)">شخص</div>
-      </div>
-      <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:12px; text-align:center;">
-        <div style="font-size:24px; font-weight:500; color:var(--color-text-primary)">${mapped.length}</div>
-        <div style="font-size:12px; color:var(--color-text-secondary)">حقل مربوط</div>
-      </div>
-      <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:12px; text-align:center;">
-        <div style="font-size:24px; font-weight:500; color:var(--color-text-primary)">${excelRows.length}</div>
-        <div style="font-size:12px; color:var(--color-text-secondary)">ملف PDF سيُنشأ</div>
-      </div>
-    </div>
-    <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:8px;">عينة من الأشخاص:</div>
-    <ul class="results-list">${sampleHtml}</ul>
-    ${excelRows.length > 3 ? `<div style="font-size:13px; color:var(--color-text-secondary); padding:8px 0;">... و ${excelRows.length - 3} آخرين</div>` : ''}`;
-}
+                    // Optional: Flatten form to prevent further editing (makes it a flat PDF)
+                    // form.flatten();
 
-async function generateAll() {
-  goStep(4);
-  const rc = document.getElementById('results-content');
-  const mapping = getMapping().filter(m => m.colIdx !== null);
-  const nameColIdx = parseInt(document.getElementById('name-col-select').value);
+                    // Save the filled PDF
+                    const filledPdfBytes = await pdfDoc.save();
+                    
+                    // Determine filename
+                    let fileName = rowData[filenameCol] ? String(rowData[filenameCol]).trim() : `استمارة_${i + 1}`;
+                    // sanitize filename to avoid invalid characters
+                    fileName = fileName.replace(/[\\/:*?"<>|]/g, "_") + '.pdf';
 
-  rc.innerHTML = `<div style="margin-bottom:1rem;">
-    <div style="font-size:14px; color:var(--color-text-secondary); margin-bottom:6px;">جاري الإنشاء...</div>
-    <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
-    <div style="font-size:12px; color:var(--color-text-tertiary)" id="prog-label">0 / ${excelRows.length}</div>
-  </div>`;
+                    // Add to zip
+                    zip.file(fileName, filledPdfBytes);
+                }
 
-  generatedFiles = [];
-  const PDFLib = window.PDFLib;
+                // Generate ZIP and trigger download
+                progressText.textContent = "جاري ضغط الملفات...";
+                const zipBlob = await zip.generateAsync({ type: 'blob' });
+                
+                saveAs(zipBlob, "الاستمارات_المعبأة.zip");
+                
+                // Reset UI
+                progressText.textContent = "تم الانتهاء بنجاح!";
+                setTimeout(() => {
+                    generateBtn.classList.remove('hidden');
+                    progressContainer.classList.add('hidden');
+                    progressBar.style.width = '0%';
+                }, 3000);
 
-  for (let i = 0; i < excelRows.length; i++) {
-    const row = excelRows[i];
-    try {
-      const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
-      const form = pdfDoc.getForm();
-
-      for (const m of mapping) {
-        const val = row[m.colIdx];
-        if (val === undefined || val === null || val === '') continue;
-        try {
-          const f = form.getField(m.field.name);
-          if (m.field.type === 'checkbox') {
-            const strVal = String(val).toLowerCase();
-            if (strVal === 'true' || strVal === 'yes' || strVal === '1' || strVal === 'نعم') f.check();
-            else f.uncheck();
-          } else if (m.field.type === 'radio') {
-            f.select(String(val));
-          } else {
-            f.setText(String(val));
-          }
-        } catch(fe) {}
-      }
-
-      form.flatten();
-      const filledBytes = await pdfDoc.save();
-      const name = String(row[nameColIdx] || ('person_' + (i+1))).replace(/[\\/:*?"<>|]/g, '_');
-      generatedFiles.push({ name: name + '.pdf', bytes: filledBytes });
-    } catch(e) {
-      generatedFiles.push({ name: (row[nameColIdx] || ('person_' + (i+1))) + '_error', error: e.message });
-    }
-
-    const pct = Math.round(((i+1) / excelRows.length) * 100);
-    document.getElementById('prog').style.width = pct + '%';
-    document.getElementById('prog-label').textContent = `${i+1} / ${excelRows.length}`;
-  }
-
-  const ok = generatedFiles.filter(f => !f.error);
-  const err = generatedFiles.filter(f => f.error);
-
-  const listHtml = generatedFiles.slice(0, 10).map(f =>
-    f.error
-      ? `<li><span>${f.name}</span><span class="status-err"><i class="ti ti-x" aria-hidden="true"></i> خطأ</span></li>`
-      : `<li><span>${f.name}</span><span class="status-ok"><i class="ti ti-check" aria-hidden="true"></i> جاهز</span></li>`
-  ).join('');
-
-  rc.innerHTML = `
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:1rem;">
-      <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:12px; text-align:center;">
-        <div style="font-size:24px; font-weight:500; color:#639922">${ok.length}</div>
-        <div style="font-size:12px; color:var(--color-text-secondary)">تم إنشاؤها بنجاح</div>
-      </div>
-      <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:12px; text-align:center;">
-        <div style="font-size:24px; font-weight:500; color:${err.length ? '#E24B4A' : 'var(--color-text-secondary)'}">${err.length}</div>
-        <div style="font-size:12px; color:var(--color-text-secondary)">أخطاء</div>
-      </div>
-    </div>
-    <ul class="results-list">${listHtml}</ul>
-    ${generatedFiles.length > 10 ? `<div style="font-size:13px; color:var(--color-text-secondary); padding:8px 0">... و ${generatedFiles.length - 10} آخرين</div>` : ''}`;
-}
-
-async function downloadAll() {
-  const btn = document.getElementById('btn-download-all');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> جاري الضغط...';
-
-  const zip = new JSZip();
-  for (const f of generatedFiles) {
-    if (!f.error) zip.file(f.name, f.bytes);
-  }
-
-  const blob = await zip.generateAsync({ type: 'blob' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'استمارات_مملوءة.zip';
-  a.click();
-
-  btn.disabled = false;
-  btn.innerHTML = '<i class="ti ti-download" aria-hidden="true"></i> تحميل الكل (ZIP)';
-}
-
-function resetAll() {
-  pdfFile = null; excelFile = null; pdfBytes = null;
-  excelRows = []; excelCols = []; pdfFields = []; generatedFiles = [];
-  ['pdf-zone','excel-zone'].forEach(id => {
-    document.getElementById(id).classList.remove('has-file');
-  });
-  document.getElementById('pdf-zone').querySelector('.upload-icon').innerHTML = '<i class="ti ti-upload" aria-hidden="true"></i>';
-  document.getElementById('pdf-zone').querySelector('.upload-text').textContent = 'انقر أو اسحب ملف PDF';
-  document.getElementById('excel-zone').querySelector('.upload-icon').innerHTML = '<i class="ti ti-upload" aria-hidden="true"></i>';
-  document.getElementById('excel-zone').querySelector('.upload-text').textContent = 'انقر أو اسحب ملف Excel';
-  document.getElementById('pdf-name').classList.add('hidden');
-  document.getElementById('excel-name').classList.add('hidden');
-  document.getElementById('btn-analyze').disabled = true;
-  document.getElementById('btn-analyze').innerHTML = '<i class="ti ti-arrow-left" aria-hidden="true"></i> تحليل الملفات';
-  document.getElementById('pdf-input').value = '';
-  document.getElementById('excel-input').value = '';
-  goStep(1);
-}
-</script>
+            } catch (error) {
+                console.error("Processing Error:", error);
+                alert("حدث خطأ أثناء معالجة الملفات. الرجاء التأكد من صحة الملفات والمحاولة مرة أخرى.");
+                generateBtn.classList.remove('hidden');
+                progressContainer.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
