@@ -99,7 +99,61 @@
 </head>
 <body class="text-gray-800 min-h-screen flex flex-col items-center py-6 px-4">
 
-    <!-- Auth Screen Fullscreen Overlay -->
+    <!-- Firebase Custom Action Router Screen (لإعادة تعيين كلمة المرور وتفعيل الإيميل من الرابط) -->
+    <div id="firebase-action-screen" class="fixed inset-0 bg-gray-50 flex items-center justify-center p-4 z-[150] overflow-hidden hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-4000"></div>
+
+        <div class="w-full max-w-md glass-panel rounded-[2rem] p-8 flex flex-col fade-in-up relative z-10 text-center shadow-2xl border border-white/60">
+            <!-- Loading Action -->
+            <div id="action-loading" class="py-8">
+                <div class="loader-spin mx-auto mb-4 border-blue-500"></div>
+                <h3 class="text-xl font-bold text-gray-800">جارِ معالجة طلبك السحابي...</h3>
+                <p class="text-sm text-gray-500 mt-2">يرجى الانتظار لحظات</p>
+            </div>
+
+            <!-- Reset Password Custom UI -->
+            <div id="action-reset-pwd-ui" class="hidden">
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-inner">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                </div>
+                <h3 class="text-2xl font-black text-gray-800 mb-2">كلمة مرور جديدة</h3>
+                <p class="text-sm text-gray-600 mb-6">قم بتعيين كلمة مرور جديدة لحسابك الآن.</p>
+                
+                <input type="password" id="new-password-input" placeholder="كلمة المرور الجديدة (6 أحرف أو أكثر)" class="w-full bg-white/80 border border-gray-200 rounded-xl py-4 px-4 text-sm font-bold focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none mb-4 text-center tracking-widest shadow-inner" dir="ltr">
+                
+                <button id="save-new-pwd-btn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3.5 rounded-xl transition-all duration-300 shadow-lg transform hover:-translate-y-1">
+                    حفظ كلمة المرور والدخول
+                </button>
+            </div>
+
+            <!-- Success UI -->
+            <div id="action-success-ui" class="hidden py-4">
+                <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-inner">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h3 class="text-2xl font-black text-gray-800 mb-2" id="action-success-title">تمت العملية بنجاح!</h3>
+                <p class="text-sm text-gray-600 mb-6" id="action-success-msg">تم التحقق من هويتك وتحديث بياناتك بنجاح.</p>
+                <button id="action-go-login-btn" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-extrabold py-3.5 rounded-xl transition-all shadow-lg transform hover:-translate-y-1">
+                    الاستمرار لتسجيل الدخول
+                </button>
+            </div>
+
+            <!-- Error UI -->
+            <div id="action-error-ui" class="hidden py-4">
+                <div class="w-20 h-20 bg-red-100 text-red-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-inner">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </div>
+                <h3 class="text-2xl font-black text-gray-800 mb-2">الرابط غير صالح!</h3>
+                <p class="text-sm text-gray-600 mb-6">عذراً، هذا الرابط إما أنه مستخدم مسبقاً أو منتهي الصلاحية.</p>
+                <button id="action-go-home-btn" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-extrabold py-3.5 rounded-xl transition-all shadow-lg transform hover:-translate-y-1">
+                    العودة للصفحة الرئيسية
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Screen Fullscreen Overlay (تسجيل الدخول الرئيسي) -->
     <div id="auth-screen" class="fixed inset-0 bg-gray-50 flex items-center justify-center p-4 z-[100] overflow-hidden">
         
         <!-- Animated Background Blobs -->
@@ -120,7 +174,6 @@
                 <div id="auth-subtitle" class="mt-4 text-sm font-bold text-blue-700">تسجيل الدخول إلى حسابك</div>
             </div>
 
-            <!-- Main Auth Tab Panel -->
             <div id="auth-main-content">
                 <!-- Mode Select tabs -->
                 <div class="flex bg-gray-200/50 p-1.5 rounded-xl mb-6 relative border border-white/40">
@@ -170,11 +223,14 @@
                 <h3 class="text-xl font-black text-gray-800 mb-2">تأكيد الحساب والبريد</h3>
                 <p class="text-sm text-gray-600 mb-4" id="verify-email-text"></p>
                 
-                <div class="bg-white/70 border border-blue-200 rounded-2xl p-4 mb-5 shadow-sm text-right">
-                    <p class="text-xs font-bold text-blue-800 mb-1">📬 يرجى مراجعة البريد الوارد (أو المزعج Spam/Junk)</p>
-                    <p class="text-[11px] text-gray-500 leading-relaxed mb-3">لقد أرسلنا رابط تأكيد أمني. اضغط عليه لتفعيل حسابك والتمكن من الدخول للموقع.</p>
+                <div class="bg-white/70 border border-blue-200 rounded-2xl p-4 mb-5 shadow-sm text-right relative overflow-hidden">
+                    <!-- تأثير وميض أحمر خفيف للتركيز -->
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-400"></div>
+                    <p class="text-xs font-bold text-blue-800 mb-1">📬 يرجى مراجعة البريد الوارد (Inbox)</p>
+                    <p class="text-[11px] font-bold text-red-600 mb-2">⚠️ إذا لم تجد الرسالة، افتح قسم (الرسائل غير المرغوب فيها Spam/Junk) أو (البريد الترويجي Promotions).</p>
+                    <p class="text-[11px] text-gray-600 leading-relaxed mb-3">لقد أرسلنا رابط تأكيد أمني. اضغط عليه لتفعيل حسابك والتمكن من الدخول للموقع.</p>
                     <div class="border-t border-blue-100 my-2 pt-2">
-                        <p class="text-[10px] font-bold text-red-500 leading-normal">⚠️ ملاحظة هامة: هذا الإجراء أمني فقط لإثبات ملكية البريد وحماية حسابك السحابي من الاختراق، ولا علاقة له بالاشتراكات المدفوعة (الشهري والسنوي) التي تفعلها الإدارة.</p>
+                        <p class="text-[10px] font-bold text-gray-500 leading-normal">هذا الإجراء أمني فقط لإثبات ملكية البريد وحماية حسابك السحابي من الاختراق، ولا علاقة له بالاشتراكات المدفوعة (الشهري والسنوي) التي تفعلها الإدارة.</p>
                     </div>
                 </div>
 
@@ -196,6 +252,9 @@
                 </div>
                 <h3 class="text-xl font-black text-gray-800 mb-2">إعادة تعيين كلمة المرور</h3>
                 <p class="text-sm text-gray-600 mb-4">أدخل بريدك الإلكتروني وسنرسل لك رابطاً مباشراً لتعيين كلمة مرور جديدة.</p>
+                <div class="bg-blue-50/50 p-3 rounded-lg mb-4 text-[10px] text-right text-gray-600 font-bold border border-blue-100">
+                    ⚠️ تذكر: الرابط قد يصل إلى مجلد (الرسائل غير المرغوب فيها Spam) أو (Promotions) في بريد جيميل.
+                </div>
                 
                 <input type="email" id="forgot-pwd-email" placeholder="البريد الإلكتروني" required class="w-full bg-white/70 border border-white/50 rounded-xl py-3.5 pr-4 pl-4 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none placeholder-gray-400 shadow-sm backdrop-blur-sm mb-4 text-left" dir="ltr">
                 
@@ -540,7 +599,7 @@
     <!-- Firebase System Modules -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, confirmPasswordReset, applyActionCode, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Firebase Configuration (DIRECTLY EMBEDDED)
@@ -567,6 +626,100 @@
         let adminUnsub = null;
         let authMode = 'login'; // 'login' or 'register'
         let verificationInterval = null;
+
+        // Custom Toast Function
+        let toastTimeout = null;
+        window.showToast = function(message, type = 'error') {
+            const toast = document.getElementById('custom-toast');
+            const msgEl = document.getElementById('toast-message');
+            if (msgEl) msgEl.textContent = message;
+            if (toast) {
+                if (toastTimeout) clearTimeout(toastTimeout);
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+                if (type === 'success') {
+                    toast.classList.remove('bg-red-600');
+                    toast.classList.add('bg-green-600');
+                } else {
+                    toast.classList.remove('bg-green-600');
+                    toast.classList.add('bg-red-600');
+                }
+                toastTimeout = setTimeout(window.hideToast, 5000);
+            }
+        };
+        window.hideToast = function() {
+            const toast = document.getElementById('custom-toast');
+            if (toast) {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }
+        };
+        document.getElementById('close-toast-btn')?.addEventListener('click', window.hideToast);
+
+        // ==========================================
+        // FIREBASE ACTION ROUTER (Reset Password & Email Verification from Link)
+        // ==========================================
+        const urlParams = new URLSearchParams(window.location.search);
+        const actionMode = urlParams.get('mode');
+        const actionCode = urlParams.get('oobCode');
+
+        if (actionMode && actionCode) {
+            // إخفاء كل الواجهات وعرض شاشة المعالجة
+            document.getElementById('auth-screen')?.classList.add('hidden');
+            document.getElementById('main-app')?.classList.add('hidden');
+            
+            const actionScreen = document.getElementById('firebase-action-screen');
+            const actionLoading = document.getElementById('action-loading');
+            const actionResetPwdUI = document.getElementById('action-reset-pwd-ui');
+            const actionSuccessUI = document.getElementById('action-success-ui');
+            const actionErrorUI = document.getElementById('action-error-ui');
+            
+            if (actionScreen) actionScreen.classList.remove('hidden');
+
+            if (actionMode === 'resetPassword') {
+                actionLoading?.classList.add('hidden');
+                actionResetPwdUI?.classList.remove('hidden');
+                
+                document.getElementById('save-new-pwd-btn')?.addEventListener('click', async () => {
+                    const newPwd = document.getElementById('new-password-input')?.value;
+                    if (!newPwd || newPwd.length < 6) return window.showToast("كلمة المرور يجب أن لا تقل عن 6 أحرف!");
+                    
+                    const btn = document.getElementById('save-new-pwd-btn');
+                    btn.disabled = true; 
+                    btn.innerHTML = 'جارِ الحفظ...';
+                    
+                    try {
+                        await confirmPasswordReset(auth, actionCode, newPwd);
+                        actionResetPwdUI?.classList.add('hidden');
+                        actionSuccessUI?.classList.remove('hidden');
+                        document.getElementById('action-success-title').textContent = "تم تغيير كلمة المرور بنجاح!";
+                        document.getElementById('action-success-msg').textContent = "يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.";
+                    } catch (error) {
+                        actionResetPwdUI?.classList.add('hidden');
+                        actionErrorUI?.classList.remove('hidden');
+                    }
+                });
+            } else if (actionMode === 'verifyEmail') {
+                applyActionCode(auth, actionCode).then(() => {
+                    actionLoading?.classList.add('hidden');
+                    actionSuccessUI?.classList.remove('hidden');
+                    document.getElementById('action-success-title').textContent = "تم تأكيد بريدك الإلكتروني بنجاح!";
+                    document.getElementById('action-success-msg').textContent = "لقد تم إثبات ملكيتك للبريد، يمكنك الآن الدخول لحسابك.";
+                }).catch((error) => {
+                    actionLoading?.classList.add('hidden');
+                    actionErrorUI?.classList.remove('hidden');
+                });
+            } else {
+                actionLoading?.classList.add('hidden');
+                actionErrorUI?.classList.remove('hidden');
+            }
+            
+            document.getElementById('action-go-login-btn')?.addEventListener('click', () => { window.location.href = window.location.pathname; });
+            document.getElementById('action-go-home-btn')?.addEventListener('click', () => { window.location.href = window.location.pathname; });
+            
+            // نوقف استكمال قراءة الكود الباقي لأننا في مسار مختلف
+            throw new Error("Action Router Active - Stopping normal execution");
+        }
 
         // DOM elements for Auth UI
         const authScreen = document.getElementById('auth-screen');
@@ -631,7 +784,7 @@
 
         sendResetLinkBtn?.addEventListener('click', async () => {
             const email = forgotPwdEmailInput?.value.trim();
-            if (!email) return showToast("الرجاء إدخال البريد الإلكتروني أولاً.");
+            if (!email) return window.showToast("الرجاء إدخال البريد الإلكتروني أولاً.");
             
             const originalText = sendResetLinkBtn.innerHTML;
             sendResetLinkBtn.disabled = true;
@@ -639,16 +792,15 @@
             
             try {
                 await sendPasswordResetEmail(auth, email);
-                showToast("تم إرسال رابط إعادة التعيين لبريدك بنجاح!", "success");
+                window.showToast("تم إرسال رابط إعادة التعيين لبريدك بنجاح!", "success");
                 backToLoginBtn?.click();
             } catch (error) {
-                console.error(error);
                 if (error.code === 'auth/user-not-found') {
-                    showToast("البريد الإلكتروني غير مسجل لدينا.");
+                    window.showToast("البريد الإلكتروني غير مسجل لدينا.");
                 } else if (error.code === 'auth/invalid-email') {
-                    showToast("صيغة البريد الإلكتروني غير صحيحة.");
+                    window.showToast("صيغة البريد الإلكتروني غير صحيحة.");
                 } else {
-                    showToast("حدث خطأ أثناء إرسال الرابط.");
+                    window.showToast("حدث خطأ أثناء إرسال الرابط.");
                 }
             } finally {
                 sendResetLinkBtn.disabled = false;
@@ -668,13 +820,13 @@
             authSubmitBtn.disabled = true;
             authSubmitBtn.innerHTML = `
                 <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <span>${authMode === 'login' ? 'جارِ التحقق وتأكيد الهوية...' : 'جارِ إنشاء حسابك وتجهيز التفعيل...'}</span>
+                <span>${authMode === 'login' ? 'جارِ التحقق من البيانات...' : 'جارِ إرسال كود التفعيل لبريدك...'}</span>
             `;
 
             try {
                 if (authMode === 'login') {
                     await signInWithEmailAndPassword(auth, email, password);
-                    showToast("تم تسجيل الدخول بنجاح!", "success");
+                    window.showToast("تم تسجيل الدخول بنجاح!", "success");
                 } else {
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
@@ -696,33 +848,32 @@
                         createdAt: Date.now()
                     };
                     await setDoc(profileRef, newProfile);
-                    showToast("تم إنشاء الحساب! الرجاء تفعيل بريدك الإلكتروني.", "success");
+                    window.showToast("تم إنشاء الحساب! الرجاء تأكيد هويتك.", "success");
+                    
+                    // التحويل القسري والمباشر لواجهة التفعيل
+                    authMainContent?.classList.add('hidden');
+                    authForgotPwdBox?.classList.add('hidden');
+                    authVerificationBox?.classList.remove('hidden');
+                    
+                    const verifyText = document.getElementById('verify-email-text');
+                    if (verifyText) verifyText.innerHTML = `تم إرسال رابط تأكيد الهوية لبريدك الإلكتروني:<br><strong class="text-blue-600">${user.email}</strong>`;
+                    startVerificationTimer();
                 }
             } catch (error) {
                 // استعادة شكل الزر عند حدوث خطأ
                 authSubmitBtn.disabled = false;
                 authSubmitBtn.innerHTML = originalBtnContent;
 
-                const expectedAuthErrors = [
-                    'auth/invalid-credential',
-                    'auth/wrong-password',
-                    'auth/user-not-found',
-                    'auth/email-already-in-use'
-                ];
-                if (!expectedAuthErrors.includes(error.code)) {
-                    console.error("Auth error:", error);
-                }
-                
                 if (error.code === 'auth/email-already-in-use') {
-                    showToast("هذا البريد مسجل بالفعل! تم تحويلك لصفحة تسجيل الدخول.");
+                    window.showToast("هذا البريد مسجل بالفعل! تم تحويلك لصفحة تسجيل الدخول.");
                     authTabLogin?.click();
                     if (authEmailInput) authEmailInput.value = email; 
                 } else if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                    showToast("عذراً! البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى التأكد من البيانات والمحاولة مجدداً.");
+                    window.showToast("عذراً! كلمة المرور التي أدخلتها أو البريد غير صحيح. يرجى التأكد وإعادة المحاولة.");
                 } else if (error.code === 'auth/operation-not-allowed') {
-                    showToast("تسجيل الحساب بالبريد معطل حالياً! يرجى التأكد من تفعيل خيار (Email/Password) داخل لوحة تحكم Firebase Console.");
+                    window.showToast("التسجيل معطل حالياً من السيرفر!");
                 } else {
-                    showToast("خطأ في المصادقة: يرجى التحقق من المدخلات والمحاولة مرة أخرى.");
+                    window.showToast("حدث خطأ أثناء الاتصال. تأكد من الشبكة والمحاولة مجدداً.");
                 }
             }
         });
@@ -754,38 +905,41 @@
             if (auth.currentUser) {
                 await auth.currentUser.reload();
                 if (auth.currentUser.emailVerified) {
-                    showToast("تم تفعيل الحساب بنجاح!", "success");
+                    window.showToast("تم تفعيل الحساب بنجاح!", "success");
                     window.location.reload();
                 } else {
-                    showToast("لم يتم التفعيل بعد! يرجى مراجعة صندوق الوارد والضغط على رابط التفعيل.");
+                    window.showToast("لم تقم بالتفعيل بعد! يرجى مراجعة صندوق الوارد والضغط على الرابط.");
                 }
             }
         });
 
         document.getElementById('resend-verification-btn')?.addEventListener('click', async () => {
             if (auth.currentUser) {
+                const btn = document.getElementById('resend-verification-btn');
+                btn.textContent = "جارِ الإرسال...";
                 try {
                     await sendEmailVerification(auth.currentUser);
-                    showToast("تم إعادة إرسال رسالة التفعيل بنجاح!", "success");
+                    window.showToast("تم إعادة إرسال رسالة التفعيل بنجاح!", "success");
+                    btn.textContent = "إعادة إرسال رابط التفعيل";
                     startVerificationTimer();
                 } catch (e) {
-                    showToast("يرجى الانتظار قليلاً قبل المحاولة مرة أخرى.");
+                    btn.textContent = "إعادة إرسال رابط التفعيل";
+                    window.showToast("الرجاء الانتظار قليلاً قبل طلب رسالة جديدة.");
                 }
             }
         });
 
         logoutBtn?.addEventListener('click', async () => {
             try {
-                // تأثير بصري عند تسجيل الخروج
                 const appBlocker = document.getElementById('app-blocker');
                 const blockerMsg = document.getElementById('app-blocker-msg');
                 if (appBlocker && blockerMsg) {
                     appBlocker.classList.remove('hidden');
                     appBlocker.querySelector('.loader-spin')?.classList.remove('hidden');
-                    blockerMsg.innerHTML = "جارِ تسجيل الخروج وتأمين الحساب بأمان...";
+                    blockerMsg.innerHTML = "جارِ تأمين حسابك وتسجيل الخروج بأمان...";
                     document.getElementById('blocker-subscribe-btn')?.classList.add('hidden');
                 }
-                showToast("جارِ تسجيل الخروج...", "success");
+                window.showToast("جارِ تسجيل الخروج...", "success");
                 
                 await signOut(auth);
                 setTimeout(() => {
@@ -854,6 +1008,11 @@
                 authMainContent?.classList.remove('hidden');
                 authVerificationBox?.classList.add('hidden');
                 authForgotPwdBox?.classList.add('hidden');
+                
+                if (authSubmitBtn) {
+                    authSubmitBtn.disabled = false;
+                    authSubmitBtn.innerHTML = "<span>دخول الآن</span>";
+                }
             }
         });
 
@@ -967,9 +1126,9 @@
                     expireAt: expireAt,
                     trialUsed: planSelect === 'trial' ? false : true 
                 });
-                showToast("تم تحديث حساب المستخدم بنجاح!", "success");
+                window.showToast("تم تحديث حساب المستخدم بنجاح!", "success");
             } catch(e) {
-                showToast("فشل في تحديث الحساب.");
+                window.showToast("فشل في تحديث الحساب.");
             }
         };
 
@@ -1028,38 +1187,6 @@
         // DOM elements for events
         document.getElementById('pdf-upload-box')?.addEventListener('click', () => document.getElementById('pdf-file')?.click());
         document.getElementById('excel-upload-box')?.addEventListener('click', () => document.getElementById('excel-file')?.click());
-        document.getElementById('close-toast-btn')?.addEventListener('click', hideToast);
-
-        let toastTimeout = null;
-        function showToast(message, type = 'error') {
-            const toast = document.getElementById('custom-toast');
-            const msgEl = document.getElementById('toast-message');
-            if (msgEl) msgEl.textContent = message;
-            if (toast) {
-                // إلغاء أي توقيتات سابقة لتفادي التداخل في حركات الإغلاق والفتح
-                if (toastTimeout) clearTimeout(toastTimeout);
-                
-                toast.classList.remove('translate-y-20', 'opacity-0');
-                toast.classList.add('translate-y-0', 'opacity-100');
-                
-                if (type === 'success') {
-                    toast.classList.remove('bg-red-600');
-                    toast.classList.add('bg-green-600');
-                } else {
-                    toast.classList.remove('bg-green-600');
-                    toast.classList.add('bg-red-600');
-                }
-                
-                toastTimeout = setTimeout(hideToast, 5000);
-            }
-        }
-        function hideToast() {
-            const toast = document.getElementById('custom-toast');
-            if (toast) {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }
-        }
 
         async function loadFallbackFont() {
             try {
@@ -1093,45 +1220,6 @@
         const deleteMarkerBtn = document.getElementById('delete-marker-btn');
         const activeColumnIndicator = document.getElementById('active-column-indicator');
         
-        // دوال فتح نافذة كلمة المرور
-        const pwdModal = document.getElementById('admin-password-modal');
-        const pwdInput = document.getElementById('admin-pwd-input');
-
-        document.getElementById('activate-admin-btn')?.addEventListener('click', () => {
-            if (pwdInput) pwdInput.value = '';
-            pwdModal?.classList.remove('hidden');
-            setTimeout(() => pwdInput?.focus(), 100);
-        });
-
-        document.getElementById('close-pwd-modal')?.addEventListener('click', () => {
-            pwdModal?.classList.add('hidden');
-        });
-
-        document.getElementById('submit-admin-pwd-btn')?.addEventListener('click', async () => {
-            const pwd = pwdInput?.value;
-            if (pwd === "admin1997") { 
-                try {
-                    const uid = auth.currentUser ? auth.currentUser.uid : null;
-                    if (!uid) {
-                        showToast("الرجاء إنشاء حساب أو تسجيل الدخول أولاً.");
-                        pwdModal?.classList.add('hidden');
-                        return;
-                    }
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', uid), { 
-                        role: 'admin',
-                        uid: uid,
-                        status: 'active'
-                    }, { merge: true });
-                    pwdModal?.classList.add('hidden');
-                    showToast("تم منح صلاحيات الإدارة بنجاح!", "success");
-                } catch (e) {
-                    console.error(e);
-                    showToast("حدث خطأ أثناء ترقية الحساب.");
-                }
-            } else {
-                showToast("كلمة المرور خاطئة!");
-            }
-        });
 
         // Toggle Modes controls
         const modeInteractiveBtn = document.getElementById('mode-interactive-btn');
@@ -1395,7 +1483,7 @@
 
         function handlePageClick(e) {
             if (e.target !== e.currentTarget) return;
-            if (!window.selectedExcelCol) return showToast("اختر عمود إكسل أولاً!");
+            if (!window.selectedExcelCol) return window.showToast("اختر عمود إكسل أولاً!");
 
             const rect = e.currentTarget.getBoundingClientRect();
             const newMarker = {
@@ -1567,7 +1655,7 @@
             try {
                 const doc = await PDFLib.PDFDocument.load(window.pdfBytes);
                 const fields = doc.getForm().getFields();
-                if (fields.length === 0) return showToast("لا توجد حقول تفاعلية.");
+                if (fields.length === 0) return window.showToast("لا توجد حقول تفاعلية.");
                 
                 let count = 0;
                 fields.forEach(field => {
@@ -1588,8 +1676,8 @@
                         count++;
                     }
                 });
-                if(count > 0) { modeManualBtn?.click(); showToast(`تم تحويل ${count} حقل.`, "success"); }
-            } catch(e) { showToast("فشل التحويل."); }
+                if(count > 0) { modeManualBtn?.click(); window.showToast(`تم تحويل ${count} حقل.`, "success"); }
+            } catch(e) { window.showToast("فشل التحويل."); }
             if (convertToManualBtn) convertToManualBtn.textContent = "تحويل للوضع الحر";
         });
 
@@ -1646,12 +1734,12 @@
         }
 
         generateBtn?.addEventListener('click', async () => {
-            if (!userProfile) return showToast("الرجاء انتظار تسجيل الدخول أولاً.");
-            if (userProfile.status !== 'active') return showToast("هذا الحساب تم إيقافه من قبل الإدارة.");
+            if (!userProfile) return window.showToast("الرجاء انتظار تسجيل الدخول أولاً.");
+            if (userProfile.status !== 'active') return window.showToast("هذا الحساب تم إيقافه من قبل الإدارة.");
             
             const now = Date.now();
             if (userProfile.expireAt && userProfile.expireAt < now) {
-                return showToast("لقد انتهى اشتراكك. يرجى التجديد للاستمرار.");
+                return window.showToast("لقد انتهى اشتراكك. يرجى التجديد للاستمرار.");
             }
 
             if (userProfile.plan === 'trial' && userProfile.trialUsed) {
@@ -1659,7 +1747,7 @@
             }
 
             if (!window.pdfBytes || window.excelData.length === 0) return;
-            if (currentMode === 'manual' && window.manualMarkers.length === 0) return showToast("حدد موضعاً واحداً على الأقل.");
+            if (currentMode === 'manual' && window.manualMarkers.length === 0) return window.showToast("حدد موضعاً واحداً على الأقل.");
 
             generateBtn?.classList.add('hidden');
             progressContainer?.classList.remove('hidden');
@@ -1750,11 +1838,11 @@
                     });
                 }
 
-                showToast("تم التحميل بنجاح!", "success");
+                window.showToast("تم التحميل بنجاح!", "success");
                 
                 setTimeout(() => { generateBtn?.classList.remove('hidden'); progressContainer?.classList.add('hidden'); }, 2000);
             } catch (e) {
-                showToast("حدث خطأ، تأكد من البيانات.");
+                window.showToast("حدث خطأ، تأكد من البيانات.");
                 generateBtn?.classList.remove('hidden'); progressContainer?.classList.add('hidden');
             }
         });
