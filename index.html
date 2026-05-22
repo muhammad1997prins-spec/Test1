@@ -215,7 +215,7 @@
                 </form>
             </div>
 
-            <!-- Verification Box (تأكيد البريد الإلكتروني تحت الحساب مباشرة بطريقة تفاعلية) -->
+            <!-- Verification Box -->
             <div id="auth-verification-box" class="hidden text-center fade-in-up relative z-10 w-full mt-2">
                 <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-inner">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
@@ -224,13 +224,12 @@
                 <p class="text-sm text-gray-600 mb-4" id="verify-email-text"></p>
                 
                 <div class="bg-white/70 border border-blue-200 rounded-2xl p-4 mb-5 shadow-sm text-right relative overflow-hidden">
-                    <!-- تأثير وميض أحمر خفيف للتركيز -->
                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-400"></div>
                     <p class="text-xs font-bold text-blue-800 mb-1">📬 يرجى مراجعة البريد الوارد (Inbox)</p>
-                    <p class="text-[11px] font-bold text-red-600 mb-2">⚠️ إذا لم تجد الرسالة، افتح قسم (الرسائل غير المرغوب فيها Spam/Junk) أو (البريد الترويجي Promotions).</p>
+                    <p class="text-[11px] font-bold text-red-600 mb-2">⚠️ إذا لم تجد الرسالة، افتح قسم (Spam/Junk) أو (Promotions).</p>
                     <p class="text-[11px] text-gray-600 leading-relaxed mb-3">لقد أرسلنا رابط تأكيد أمني. اضغط عليه لتفعيل حسابك والتمكن من الدخول للموقع.</p>
                     <div class="border-t border-blue-100 my-2 pt-2">
-                        <p class="text-[10px] font-bold text-gray-500 leading-normal">هذا الإجراء أمني فقط لإثبات ملكية البريد وحماية حسابك السحابي من الاختراق، ولا علاقة له بالاشتراكات المدفوعة (الشهري والسنوي) التي تفعلها الإدارة.</p>
+                        <p class="text-[10px] font-bold text-gray-500 leading-normal">هذا الإجراء أمني فقط لإثبات ملكية البريد، ولا علاقة له بالاشتراكات المدفوعة (الشهري والسنوي) التي تفعلها الإدارة.</p>
                     </div>
                 </div>
 
@@ -307,7 +306,7 @@
                 <button id="blocker-subscribe-btn" class="hidden mt-4 bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-2 rounded-lg shadow-md transition-colors">عرض خطط الاشتراك</button>
             </div>
 
-            <!-- Header (Elevated to z-50 to remain clickable always) -->
+            <!-- Header -->
             <div class="bg-blue-600 p-6 text-white text-center relative z-50">
                 <h1 class="text-3xl font-bold mb-2">أداة التعبئة التلقائية للاستمارات</h1>
                 <p class="text-blue-100 opacity-90 mb-4">قم برفع أي استمارة PDF وملف Excel لتوليد الاستمارات المعبأة فوراً</p>
@@ -329,7 +328,6 @@
                 
                 <!-- Step 1 & 2: File Uploads -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- PDF Upload -->
                     <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer transition-colors file-upload-wrapper relative" id="pdf-upload-box">
                         <input type="file" id="pdf-file" accept="application/pdf" class="hidden">
                         <div class="text-blue-500 mb-3">
@@ -339,7 +337,6 @@
                         <p class="text-sm text-gray-500" id="pdf-status">يدعم الاستمارات التفاعلية والعادية والممسوحة ضوئياً</p>
                     </div>
 
-                    <!-- Excel Upload -->
                     <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer transition-colors file-upload-wrapper relative" id="excel-upload-box">
                         <input type="file" id="excel-file" accept=".xlsx, .xls, .csv" class="hidden">
                         <div class="text-green-500 mb-3">
@@ -350,14 +347,13 @@
                     </div>
                 </div>
 
-                <!-- Mode Selection & Designer Section (Hidden initially) -->
+                <!-- Mode Selection & Designer Section -->
                 <div id="mapping-section" class="hidden border rounded-xl overflow-hidden shadow-sm border-blue-200">
                     <div class="bg-blue-50 border-b border-blue-100 p-4 flex flex-col md:flex-row items-center justify-between gap-4">
                         <div>
                             <h3 class="text-xl font-bold text-blue-900">3. إعداد وتصميم الربط</h3>
                             <p class="text-sm text-blue-700 mt-1">اختر نمط التعبئة المناسب لاستماراتك وابدأ بالربط</p>
                         </div>
-                        <!-- Mode Tabs -->
                         <div class="flex rounded-lg bg-blue-100 p-1">
                             <button type="button" id="mode-interactive-btn" class="px-4 py-2 text-sm font-bold rounded-md bg-white text-blue-800 shadow-sm transition-all">
                                 تعبئة حقول تفاعلية جاهزة
@@ -369,7 +365,6 @@
                     </div>
                     
                     <div class="p-6 space-y-6">
-                        <!-- Config Box -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-blue-50 border border-blue-100 rounded-lg p-4">
                             <div>
                                 <h4 class="font-bold text-blue-800 text-sm mb-1">تسمية الاستمارات الناتجة</h4>
@@ -377,7 +372,6 @@
                                 <select id="filename-column" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border text-sm">
                                 </select>
                             </div>
-                            
                             <div class="flex flex-col justify-center">
                                 <label class="inline-flex items-center cursor-pointer mt-3">
                                     <input type="checkbox" id="flatten-pdf-checkbox" class="sr-only peer" checked>
@@ -388,7 +382,7 @@
                             </div>
                         </div>
 
-                        <!-- TAB 1 CONTENT: Interactive Form Mapping -->
+                        <!-- Interactive Form Mapping -->
                         <div id="interactive-workspace" class="space-y-4">
                             <div id="assistant-banner" class="hidden bg-amber-50 border border-amber-200 rounded-lg p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                                 <div class="flex items-start gap-3">
@@ -419,40 +413,79 @@
                             </div>
                         </div>
 
-                        <!-- TAB 2 CONTENT: Manual Visual Designer Workspace -->
+                        <!-- Manual Visual Designer Workspace -->
                         <div id="manual-workspace" class="hidden flex flex-col lg:flex-row gap-6">
                             
                             <!-- Left Panel: Columns -->
-                            <div class="w-full lg:w-1/4 space-y-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                                <div class="border-b pb-2">
-                                    <h4 class="font-bold text-gray-700 text-sm">أعمدة الـ Excel المتاحة</h4>
-                                    <p class="text-[11px] text-gray-500 mt-1">اضغط على العمود، ثم انقر على المكان المراد في صفحة الـ PDF:</p>
+                            <div class="w-full lg:w-1/4 space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                    <div class="border-b pb-2">
+                                        <h4 class="font-bold text-gray-700 text-sm">أعمدة الـ Excel المتاحة</h4>
+                                        <p class="text-[11px] text-gray-500 mt-1">اضغط على العمود، ثم انقر على المكان المراد في صفحة الـ PDF:</p>
+                                    </div>
+                                    <div id="excel-columns-list" class="space-y-2 mt-4 max-h-[300px] overflow-y-auto custom-scrollbar"></div>
                                 </div>
-                                
-                                <div id="excel-columns-list" class="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar"></div>
 
-                                <div id="marker-editor" class="hidden border-t pt-4 mt-4 space-y-3 bg-blue-50 bg-opacity-50 p-3 rounded-lg border border-blue-100">
-                                    <h5 class="font-bold text-xs text-blue-900 flex items-center gap-1">
+                                <!-- نظام إدارة القوالب VIP -->
+                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 relative overflow-hidden">
+                                    
+                                    <!-- Lock Overlay for Free/Trial Users -->
+                                    <div id="premium-template-lock" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-30 flex flex-col items-center justify-center border border-amber-200">
+                                        <span class="text-3xl mb-2 drop-shadow-md">👑</span>
+                                        <span class="text-sm font-bold text-amber-700 text-center px-4 mb-2">ميزة حفظ القوالب للـ VIP</span>
+                                        <p class="text-[10px] text-amber-600 text-center px-4 font-medium leading-relaxed">حصرياً للمشتركين (الشهري والسنوي): رتب استمارتك مرة واحدة، واحفظها لتعيد استخدامها لاحقاً بضغطة زر!</p>
+                                    </div>
+
+                                    <div class="border-b border-blue-200 pb-2 flex justify-between items-center">
+                                        <h4 class="font-bold text-blue-900 text-sm">إدارة القوالب</h4>
+                                        <span class="text-[9px] bg-amber-400 text-white font-bold px-2 py-0.5 rounded-full shadow-sm">VIP</span>
+                                    </div>
+                                    
+                                    <div class="mt-3 space-y-3">
+                                        <!-- Save Template -->
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-blue-700 mb-1">حفظ التصميم الحالي:</label>
+                                            <div class="flex gap-2">
+                                                <input type="text" id="template-name-input" placeholder="اكتب اسم القالب هنا..." class="w-full border border-blue-300 rounded p-1.5 text-xs bg-white focus:ring-1 focus:ring-blue-500 outline-none">
+                                                <button type="button" id="save-template-btn" class="bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-blue-700 shadow-sm transition-colors whitespace-nowrap">حفظ</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Load Template -->
+                                        <div class="pt-2 border-t border-blue-100">
+                                            <label class="block text-[10px] font-bold text-blue-700 mb-1">استدعاء قالب محفوظ:</label>
+                                            <div class="flex gap-2">
+                                                <select id="saved-templates-select" class="w-full border border-blue-300 rounded p-1.5 text-xs bg-white outline-none">
+                                                    <option value="">-- اختر قالباً --</option>
+                                                </select>
+                                                <button type="button" id="load-template-btn" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-emerald-700 shadow-sm transition-colors whitespace-nowrap">تطبيق</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="marker-editor" class="hidden space-y-3 bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                                    <h5 class="font-bold text-xs text-indigo-900 flex items-center gap-1 border-b border-indigo-200 pb-2">
                                         <span>تعديل تنسيق الحقل</span>
-                                        <span id="editor-active-field-name" class="text-blue-600 font-extrabold"></span>
+                                        <span id="editor-active-field-name" class="text-indigo-600 font-extrabold"></span>
                                     </h5>
                                     <div>
                                         <label class="block text-xs font-semibold text-gray-600 mb-1">حجم الخط</label>
-                                        <input type="number" id="marker-font-size" value="14" min="6" max="72" class="w-full border rounded p-1 text-sm bg-white">
+                                        <input type="number" id="marker-font-size" value="14" min="6" max="72" class="w-full border rounded p-1.5 text-sm bg-white outline-none focus:border-indigo-400">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-semibold text-gray-600 mb-1">لون النص</label>
-                                        <input type="color" id="marker-color" value="#000000" class="w-full h-8 p-0 border rounded bg-white">
+                                        <input type="color" id="marker-color" value="#000000" class="w-full h-8 p-0 border rounded bg-white cursor-pointer">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-semibold text-gray-600 mb-1">محاذاة النص</label>
-                                        <select id="marker-align" class="w-full border rounded p-1 text-sm bg-white">
+                                        <select id="marker-align" class="w-full border rounded p-1.5 text-sm bg-white outline-none focus:border-indigo-400">
                                             <option value="right">يمين (للعربية)</option>
                                             <option value="center">وسط</option>
                                             <option value="left">يسار (للإنجليزية)</option>
                                         </select>
                                     </div>
-                                    <button type="button" id="delete-marker-btn" class="w-full py-1.5 text-xs bg-red-100 text-red-700 font-bold rounded-lg hover:bg-red-200 transition-colors">
+                                    <button type="button" id="delete-marker-btn" class="w-full py-2 text-xs bg-red-100 text-red-700 font-bold rounded-lg hover:bg-red-200 transition-colors mt-2">
                                         حذف هذا الموضع
                                     </button>
                                 </div>
@@ -499,8 +532,6 @@
         </div>
     </div>
 
-    <!-- Modals -->
-    
     <!-- Subscription Modal -->
     <div id="subscription-modal" class="fixed inset-0 z-50 bg-black bg-opacity-60 hidden flex items-center justify-center backdrop-blur-sm px-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 relative overflow-hidden">
@@ -519,6 +550,7 @@
                         <li>✔️ معالجة عدد لا محدود من الملفات</li>
                         <li>✔️ دعم فني متواصل</li>
                         <li>✔️ تقنية الختم البصري الدقيقة</li>
+                        <li class="text-amber-600 font-bold">👑 ميزة حفظ القوالب</li>
                     </ul>
                     <div class="flex gap-2 w-full mt-4">
                         <a href="https://wa.me/+9647709873200" target="_blank" class="flex-1 text-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition-colors text-xs flex items-center justify-center gap-1">واتساب</a>
@@ -535,6 +567,7 @@
                         <li>✔️ توفير هائل جداً</li>
                         <li>✔️ جميع مميزات الباقة الشهرية</li>
                         <li>✔️ تحديثات مجانية للمنصة</li>
+                        <li class="text-amber-600 font-bold">👑 ميزة حفظ القوالب</li>
                     </ul>
                     <div class="flex gap-2 w-full mt-4">
                         <a href="https://wa.me/+9647709873200" target="_blank" class="flex-1 text-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition-colors text-xs flex items-center justify-center gap-1">واتساب</a>
@@ -569,7 +602,6 @@
                             </tr>
                         </thead>
                         <tbody id="admin-users-table" class="divide-y divide-gray-200">
-                            <!-- Dynamic Admin Rows -->
                         </tbody>
                     </table>
                 </div>
@@ -577,7 +609,7 @@
         </div>
     </div>
 
-    <!-- Admin Password Modal (النافذة المخصصة لكلمة المرور) -->
+    <!-- Admin Password Modal -->
     <div id="admin-password-modal" class="fixed inset-0 z-[60] bg-black bg-opacity-60 hidden flex items-center justify-center backdrop-blur-sm px-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 relative">
             <button type="button" id="close-pwd-modal" class="absolute top-4 left-4 text-gray-400 hover:text-red-500 bg-gray-100 hover:bg-red-50 w-8 h-8 rounded-full flex items-center justify-center transition-colors">✕</button>
@@ -590,7 +622,7 @@
         </div>
     </div>
 
-    <!-- Custom Toast (تم رفع مستوى الظهور z-[200] ليكون دائماً في الأعلى فوق لوحة الدخول) -->
+    <!-- Custom Toast -->
     <div id="custom-toast" class="fixed bottom-5 left-5 right-5 sm:left-auto sm:w-96 bg-red-600 text-white px-4 py-3 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 z-[200] flex items-center justify-between pointer-events-none">
         <span id="toast-message" class="text-sm font-bold"></span>
         <button type="button" id="close-toast-btn" class="text-white font-bold hover:text-gray-200 p-1 pointer-events-auto">✕</button>
@@ -600,9 +632,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, confirmPasswordReset, applyActionCode, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc, serverTimestamp, addDoc, getDocs, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration (DIRECTLY EMBEDDED)
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCKWuGi5wSDJPLYUJVSJEuIv2rxnoXaVFM",
             authDomain: "muhammed-files.firebaseapp.com",
@@ -624,7 +656,7 @@
         let allUsers = [];
         let profileUnsub = null;
         let adminUnsub = null;
-        let authMode = 'login'; // 'login' or 'register'
+        let authMode = 'login';
         let verificationInterval = null;
 
         // Custom Toast Function
@@ -664,7 +696,6 @@
         const actionCode = urlParams.get('oobCode');
 
         if (actionMode && actionCode) {
-            // إخفاء كل الواجهات وعرض شاشة المعالجة
             document.getElementById('auth-screen')?.classList.add('hidden');
             document.getElementById('main-app')?.classList.add('hidden');
             
@@ -717,7 +748,6 @@
             document.getElementById('action-go-login-btn')?.addEventListener('click', () => { window.location.href = window.location.pathname; });
             document.getElementById('action-go-home-btn')?.addEventListener('click', () => { window.location.href = window.location.pathname; });
             
-            // نوقف استكمال قراءة الكود الباقي لأننا في مسار مختلف
             throw new Error("Action Router Active - Stopping normal execution");
         }
 
@@ -742,7 +772,6 @@
         const sendResetLinkBtn = document.getElementById('send-reset-link-btn');
         const forgotPwdEmailInput = document.getElementById('forgot-pwd-email');
 
-        // Toggle Auth tabs
         authTabLogin?.addEventListener('click', () => {
             authMode = 'login';
             if (authTabLogin) authTabLogin.className = "flex-1 py-2.5 text-sm font-extrabold rounded-lg bg-white text-blue-600 shadow-md transition-all duration-300 transform scale-100 relative z-10";
@@ -767,7 +796,6 @@
             if (subtitle) subtitle.textContent = "إنشاء حساب مجاني جديد";
         });
 
-        // Forgot Password Logic
         showForgotPwdBtn?.addEventListener('click', () => {
             authMainContent?.classList.add('hidden');
             authVerificationBox?.classList.add('hidden');
@@ -808,14 +836,12 @@
             }
         });
 
-        // Email and Password Login / Registration
         authForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = authEmailInput?.value.trim();
             const password = authPasswordInput?.value;
             const fullName = authNameInput?.value.trim();
 
-            // إضافة تأثير التحميل للزر
             const originalBtnContent = authSubmitBtn.innerHTML;
             authSubmitBtn.disabled = true;
             authSubmitBtn.innerHTML = `
@@ -831,10 +857,8 @@
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
                     
-                    // إرسال رسالة تفعيل للبريد الإلكتروني للتحقق من صحته
                     await sendEmailVerification(user);
                     
-                    // Create Profile directly on Registration
                     const profileRef = doc(db, 'artifacts', appId, 'public', 'data', 'profiles', user.uid);
                     const newProfile = {
                         uid: user.uid,
@@ -850,7 +874,6 @@
                     await setDoc(profileRef, newProfile);
                     window.showToast("تم إنشاء الحساب! الرجاء تأكيد هويتك.", "success");
                     
-                    // التحويل القسري والمباشر لواجهة التفعيل
                     authMainContent?.classList.add('hidden');
                     authForgotPwdBox?.classList.add('hidden');
                     authVerificationBox?.classList.remove('hidden');
@@ -860,7 +883,6 @@
                     startVerificationTimer();
                 }
             } catch (error) {
-                // استعادة شكل الزر عند حدوث خطأ
                 authSubmitBtn.disabled = false;
                 authSubmitBtn.innerHTML = originalBtnContent;
 
@@ -950,7 +972,7 @@
             }
         });
 
-        // Firebase Auth observer (ضمان منع دخول أي مستخدم دون تفعيل البريد)
+        // Firebase Auth observer
         onAuthStateChanged(auth, (user) => {
             if (profileUnsub) { profileUnsub(); profileUnsub = null; }
             if (adminUnsub) { adminUnsub(); adminUnsub = null; }
@@ -963,7 +985,6 @@
                     let uProfile = snapshot.exists() ? snapshot.data() : null;
                     const isAdmin = uProfile?.role === 'admin';
                     
-                    // إذا لم يكن الحساب مفعلاً وغير أدمن، نحجبه فوراً داخل شاشة تسجيل الدخول
                     if (!user.emailVerified && !isAdmin) {
                         authScreen?.classList.remove('hidden');
                         mainApp?.classList.add('hidden');
@@ -978,13 +999,11 @@
                         return;
                     }
                     
-                    // إذا كان الحساب مفعلاً، يتم السماح له بدخول لوحة العمل
                     userProfile = uProfile;
                     authScreen?.classList.add('hidden');
                     mainApp?.classList.remove('hidden');
                     updateAccountUI();
 
-                    // ONLY listen to all profiles if admin
                     if (userProfile?.role === 'admin' && !adminUnsub) {
                         const profilesCol = collection(db, 'artifacts', appId, 'public', 'data', 'profiles');
                         adminUnsub = onSnapshot(profilesCol, (colSnap) => {
@@ -994,7 +1013,6 @@
                         }, (err) => console.error("Admin listen error:", err));
                     }
                 }, (err) => {
-                    console.error("Profile listen error:", err);
                     const blockerMsg = document.getElementById('app-blocker-msg');
                     if (blockerMsg) blockerMsg.textContent = "خطأ في الاتصال بالحساب.";
                 });
@@ -1004,7 +1022,6 @@
                 authScreen?.classList.remove('hidden');
                 mainApp?.classList.add('hidden');
                 
-                // إعادة ضبط أزرار وواجهات الدخول الأساسية
                 authMainContent?.classList.remove('hidden');
                 authVerificationBox?.classList.add('hidden');
                 authForgotPwdBox?.classList.add('hidden');
@@ -1016,6 +1033,64 @@
             }
         });
 
+        // ----------------------------------------------------
+        // Premium Templates Logic (VIP)
+        // ----------------------------------------------------
+        window.savedTemplates = {};
+
+        async function loadSavedTemplates() {
+            if (!auth.currentUser) return;
+            const select = document.getElementById('saved-templates-select');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- اختر قالباً --</option>';
+            
+            try {
+                const q = query(collection(db, 'artifacts', appId, 'users', auth.currentUser.uid, 'templates'));
+                const snap = await getDocs(q);
+                window.savedTemplates = {};
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    window.savedTemplates[doc.id] = data;
+                    select.appendChild(new Option(data.name, doc.id));
+                });
+            } catch(e) { console.error("Error loading templates", e); }
+        }
+
+        document.getElementById('save-template-btn')?.addEventListener('click', async () => {
+            if (!auth.currentUser) return;
+            const name = document.getElementById('template-name-input')?.value.trim();
+            if (!name) return window.showToast("يرجى كتابة اسم للقالب أولاً.");
+            if (!window.manualMarkers || window.manualMarkers.length === 0) return window.showToast("لا يوجد حقول مصممة لحفظها!");
+
+            const btn = document.getElementById('save-template-btn');
+            btn.textContent = "...";
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'users', auth.currentUser.uid, 'templates'), {
+                    name: name,
+                    markers: window.manualMarkers,
+                    createdAt: Date.now()
+                });
+                window.showToast("تم حفظ القالب بنجاح! يمكنك استخدامه لاحقاً.", "success");
+                document.getElementById('template-name-input').value = '';
+                loadSavedTemplates();
+            } catch(e) { 
+                window.showToast("فشل الحفظ. تأكد من اتصالك."); 
+            }
+            btn.textContent = "حفظ";
+        });
+
+        document.getElementById('load-template-btn')?.addEventListener('click', () => {
+            const tId = document.getElementById('saved-templates-select')?.value;
+            if (!tId || !window.savedTemplates[tId]) return window.showToast("يرجى اختيار قالب من القائمة.");
+            if (!window.pdfBytes) return window.showToast("يرجى رفع ملف PDF (استمارة) أولاً لتطبيق القالب عليها.");
+
+            const template = window.savedTemplates[tId];
+            window.manualMarkers = template.markers || [];
+            window.redrawMarkers();
+            window.showToast("تم تطبيق القالب بنجاح!", "success");
+        });
+
+
         function updateAccountUI() {
             const displayNameEl = document.getElementById('user-display-name');
             const planStatusEl = document.getElementById('user-plan-status');
@@ -1024,10 +1099,10 @@
             const appBlocker = document.getElementById('app-blocker');
             const blockerMsg = document.getElementById('app-blocker-msg');
             const blockerSubBtn = document.getElementById('blocker-subscribe-btn');
+            const premiumTemplateLock = document.getElementById('premium-template-lock');
 
             if (displayNameEl) displayNameEl.textContent = userProfile?.displayName || "مستخدم";
             
-            // Check Expiry Date
             const now = Date.now();
             let isExpired = false;
             if (userProfile?.expireAt && userProfile?.expireAt < now) {
@@ -1043,24 +1118,29 @@
 
                 if (userProfile.role === 'admin') {
                     adminBtn?.classList.remove('hidden');
-                    if (adminBtn) {
-                        adminBtn.textContent = "لوحة الإدارة"; 
-                        adminBtn.onclick = null;
-                    }
+                    if (adminBtn) { adminBtn.textContent = "لوحة الإدارة"; adminBtn.onclick = null; }
                     document.getElementById('activate-admin-btn')?.classList.add('hidden');
                 } else {
                     adminBtn?.classList.add('hidden');
                     document.getElementById('activate-admin-btn')?.classList.remove('hidden');
                 }
 
-                // إخفاء زر الترقية إذا كان المستخدم لديه اشتراك مدفوع وفعال
-                if ((userProfile.plan === 'monthly' || userProfile.plan === 'yearly') && !isExpired && userProfile.status === 'active') {
+                // Check VIP features
+                const isPaid = (userProfile.plan === 'monthly' || userProfile.plan === 'yearly') && !isExpired && userProfile.status === 'active';
+                
+                if (isPaid) {
                     subBtn?.classList.add('hidden');
+                    premiumTemplateLock?.classList.add('hidden');
+                    loadSavedTemplates(); // تحميل قوالب المستخدم
                 } else {
                     subBtn?.classList.remove('hidden');
+                    premiumTemplateLock?.classList.remove('hidden');
+                }
+                if (userProfile.role === 'admin') {
+                    premiumTemplateLock?.classList.add('hidden');
+                    loadSavedTemplates();
                 }
 
-                // Blocking Logic
                 if (userProfile.status !== 'active') {
                     appBlocker?.classList.remove('hidden');
                     if (blockerMsg) blockerMsg.textContent = "هذا الحساب تم إيقافه من قبل الإدارة.";
@@ -1085,7 +1165,6 @@
                     return;
                 }
 
-                // All good, unblock
                 appBlocker?.classList.add('hidden');
             }
         }
@@ -1184,7 +1263,6 @@
         // ==========================================
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-        // DOM elements for events
         document.getElementById('pdf-upload-box')?.addEventListener('click', () => document.getElementById('pdf-file')?.click());
         document.getElementById('excel-upload-box')?.addEventListener('click', () => document.getElementById('excel-file')?.click());
 
@@ -1220,8 +1298,6 @@
         const deleteMarkerBtn = document.getElementById('delete-marker-btn');
         const activeColumnIndicator = document.getElementById('active-column-indicator');
         
-
-        // Toggle Modes controls
         const modeInteractiveBtn = document.getElementById('mode-interactive-btn');
         const modeManualBtn = document.getElementById('mode-manual-btn');
         const interactiveWorkspace = document.getElementById('interactive-workspace');
@@ -1264,7 +1340,6 @@
             }
         });
 
-        // Initialize App vars on window to prevent module scoping issues
         window.pdfBytes = null;
         window.pdfFields = [];
         window.excelData = [];
@@ -1309,7 +1384,6 @@
             reader.onload = function(event) {
                 try {
                     const data = new Uint8Array(event.target.result);
-                    // تم التعديل لضمان قراءة التواريخ بشكل مثالي وتنسيقها لتفادي الأرقام التسلسلية للإكسل
                     const workbook = XLSX.read(data, {type: 'array', cellDates: true});
                     const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { 
                         defval: "", 
@@ -1831,7 +1905,6 @@
                 if (progressText) progressText.textContent = "جاري إنشاء ZIP...";
                 saveAs(await zip.generateAsync({ type: 'blob' }), "الاستمارات_المعبأة.zip");
                 
-                // تحديث حالة الحساب للمستخدم التجريبي
                 if (userProfile.plan === 'trial' && !userProfile.trialUsed) {
                     await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', userProfile.uid), {
                         trialUsed: true
