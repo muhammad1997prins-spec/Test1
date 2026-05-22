@@ -206,7 +206,7 @@
                     </div>
 
                     <div class="text-left w-full mt-1" id="forgot-pwd-container">
-                        <button type="button" id="show-forgot-pwd-btn" class="text-xs text-blue-600 hover:text-blue-800 font-bold transition-colors">نسيت كلمة المرور؟</button>
+                        <button type="button" id="show-forgot-pwd-btn" class="text-xs text-blue-600 hover:text-blue-800 font-bold transition-colors">نسيت كلمة المرور?</button>
                     </div>
 
                     <button type="submit" id="auth-submit-btn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1 mt-2 flex justify-center items-center gap-2">
@@ -215,7 +215,7 @@
                 </form>
             </div>
 
-            <!-- Verification Box -->
+            <!-- Verification Box (تأكيد البريد الإلكتروني تحت الحساب مباشرة بطريقة تفاعلية) -->
             <div id="auth-verification-box" class="hidden text-center fade-in-up relative z-10 w-full mt-2">
                 <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-inner">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
@@ -242,6 +242,11 @@
                     <span id="timer-container">إعادة الإرسال متاحة بعد: <span id="resend-timer" class="text-red-600 font-bold mx-1 text-base">30</span> ثانية</span>
                     <button type="button" id="resend-verification-btn" class="hidden text-blue-600 hover:text-blue-800 font-bold underline transition-colors">إعادة إرسال رابط التفعيل</button>
                 </div>
+
+                <!-- زر عودة لتسجيل الدخول المضاف لحل مشكلة التنقل -->
+                <button type="button" id="verification-back-to-login-btn" class="text-xs text-blue-600 hover:text-blue-800 font-bold transition-colors underline block mx-auto mt-4">
+                    العودة لتسجيل الدخول
+                </button>
             </div>
 
             <!-- Forgot Password Box -->
@@ -772,6 +777,7 @@
         const sendResetLinkBtn = document.getElementById('send-reset-link-btn');
         const forgotPwdEmailInput = document.getElementById('forgot-pwd-email');
 
+        // Toggle Auth tabs
         authTabLogin?.addEventListener('click', () => {
             authMode = 'login';
             if (authTabLogin) authTabLogin.className = "flex-1 py-2.5 text-sm font-extrabold rounded-lg bg-white text-blue-600 shadow-md transition-all duration-300 transform scale-100 relative z-10";
@@ -796,6 +802,7 @@
             if (subtitle) subtitle.textContent = "إنشاء حساب مجاني جديد";
         });
 
+        // Forgot Password Logic
         showForgotPwdBtn?.addEventListener('click', () => {
             authMainContent?.classList.add('hidden');
             authVerificationBox?.classList.add('hidden');
@@ -836,6 +843,7 @@
             }
         });
 
+        // Email and Password Login / Registration
         authForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = authEmailInput?.value.trim();
@@ -948,6 +956,19 @@
                     btn.textContent = "إعادة إرسال رابط التفعيل";
                     window.showToast("الرجاء الانتظار قليلاً قبل طلب رسالة جديدة.");
                 }
+            }
+        });
+
+        // تفعيل زر العودة لتسجيل الدخول في شاشة التفعيل لتمكين التنقل السلس وتسجيل الخروج
+        document.getElementById('verification-back-to-login-btn')?.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+            } catch(e) {}
+            authVerificationBox?.classList.add('hidden');
+            authMainContent?.classList.remove('hidden');
+            if (authSubmitBtn) {
+                authSubmitBtn.disabled = false;
+                authSubmitBtn.innerHTML = "<span>دخول الآن</span>";
             }
         });
 
